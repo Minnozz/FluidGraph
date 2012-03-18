@@ -54,7 +54,7 @@ FluidGraph.prototype.init = function() {
 };
 
 FluidGraph.prototype.render = function() {
-	throw('Render not implemented!');
+	throw('render() not implemented');
 };
 
 FluidGraph.prototype.data2drawX = function(dataX) {
@@ -81,7 +81,46 @@ FluidGraphLine.prototype = new FluidGraph();
 FluidGraphLine.prototype.constructor = FluidGraphLine;
 function FluidGraphLine(canvas) {
 	this.setCanvas(canvas);
+
+	this.lineWidth = 2;
+	this.lineStyle = '#169DC9';
+	this.fillStyle = '#CFF3FF';
+
+	this.xAxisWidth = 2;
+	this.xAxisStyle = '#000000';
+	this.yAxisWidth = 2;
+	this.yAxisStyle = '#000000';
 }
+
+FluidGraphLine.prototype.setLine = function(width, style) {
+	this.lineWidth = width || 0;
+	if(width && style) {
+		this.lineStyle = style;
+	}
+};
+
+FluidGraphLine.prototype.setFill = function(style) {
+	this.fillStyle = style;
+};
+
+FluidGraphLine.prototype.setXAxis = function(width, style) {
+	this.xAxisWidth = width || 0;
+	if(width && style) {
+		this.xAxisStyle = style;
+	}
+};
+
+FluidGraphLine.prototype.setYAxis = function(width, style) {
+	this.yAxisWidth = width || 0;
+	if(width && style) {
+		this.yAxisStyle = style;
+	}
+};
+
+FluidGraphLine.prototype.setAxes = function(width, style) {
+	this.setXAxis(width, style);
+	this.setYAxis(width, style);
+};
 
 FluidGraphLine.prototype.render = function() {
 	this.canvas.width = this.canvas.width;
@@ -95,27 +134,51 @@ FluidGraphLine.prototype.render = function() {
 	}
 
 	var xAxisY = this.data2drawY(0);
+	var yAxisX = this.data2drawX(0);
 
 	context.beginPath();
-	context.moveTo(this.scope.x, xAxisY);
+	context.moveTo(this.scope.x, this.scope.y + xAxisY);
 
 	for(var drawX = 0; drawX < this.scope.width; drawX++) {
 		var dataX = this.draw2dataX(drawX);
 		var dataY = this.dataSource(dataX);
 		var drawY = this.data2drawY(dataY);
 
-		var canvasX = drawX + this.scope.x;
-		var canvasY = drawY + this.scope.y;
-
-		context.lineTo(canvasX, canvasY);
+		context.lineTo(this.scope.x + drawX, this.scope.y + drawY);
 	}
 
-	context.lineTo(this.scope.x + this.scope.width, xAxisY);
+	context.lineTo(this.scope.x + this.scope.width, this.scope.y + xAxisY);
 	context.closePath();
 
-	context.lineWidth = 2;
-	context.fillStyle = '#CFF3FF';
-	context.fill();
-	context.strokeStyle = '#169DC9';
-	context.stroke();
+	context.lineWidth = this.lineWidth;
+	if(this.fillStyle) {
+		context.fillStyle = this.fillStyle;
+		context.fill();
+	}
+	if(this.lineWidth) {
+		context.strokeStyle = this.lineStyle;
+		context.stroke();
+	}
+
+	if(this.xAxisWidth) {
+		context.beginPath();
+		context.moveTo(this.scope.x, this.scope.y + xAxisY);
+		context.lineTo(this.scope.x + this.scope.width, this.scope.y + xAxisY);
+		context.closePath();
+
+		context.lineWidth = this.xAxisWidth;
+		context.strokeStyle = this.xAxisStyle;
+		context.stroke();
+	}
+
+	if(this.yAxisWidth) {
+		context.beginPath();
+		context.moveTo(this.scope.x + yAxisX, this.scope.y);
+		context.lineTo(this.scope.x + yAxisX, this.scope.y + this.scope.height);
+		context.closePath();
+
+		context.lineWidth = this.yAxisWidth;
+		context.strokeStyle = this.yAxisStyle;
+		context.stroke();
+	}
 };

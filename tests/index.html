@@ -10,17 +10,32 @@
 
 		<script type="text/javascript" src="../fluidgraph.js"></script>
 		<script type="text/javascript">
+			//
+			// Common
+			//
+
 			function init() {
 				test1();
+				test2();
 			}
 
+			function round(x, decimals) {
+				return Math.round(x * Math.pow(10, decimals)) / Math.pow(10, decimals);
+			}
+
+			//
+			// Test 1
+			//
+
 			var test1;
+
 			var test1params = {
 				a: 1,
 				b: 1,
 				c: 0,
 				d: 0
 			};
+
 			function test1() {
 				test1 = new FluidGraphLine(document.getElementById('test1'));
 				test1.setRangeX(0, 10);
@@ -72,12 +87,83 @@
 				});
 			}
 
-			function round(x, decimals) {
-				return Math.round(x * Math.pow(10, decimals)) / Math.pow(10, decimals);
+			//
+			// Test 2
+			//
+
+			var test2;
+			var test2params = {
+				a: 3,
+				b: 3,
+				c: -1,
+				d: 0,
+			};
+
+			function test2() {
+				test2 = new FluidGraphLine(document.getElementById('test2'));
+				test2.setRangeX(-3, 3);
+				test2.setRangeY(-5, 5);
+				test2.setAxes(3);
+				test2.setDataSource(function(x) {
+					return test2params.a * Math.pow(x, 3) + test2params.b * Math.pow(x, 2) + test2params.c * x + test2params.d;
+				});
+				test2.init();
+
+				$("#test2-a").slider({
+					value: 100,
+					slide: function(event, ui) {
+						var a = (ui.value / 25) - 1;
+						test2params.a = a;
+						test2.render();
+						$("#test2-a-value").html(round(a, 3));
+					}
+				});
+
+				$("#test2-b").slider({
+					value: 100,
+					slide: function(event, ui) {
+						var b = (ui.value / 25) - 1;
+						test2params.b = b;
+						test2.render();
+						$("#test2-b-value").html(round(b, 3));
+					}
+				});
+
+				$("#test2-c").slider({
+					value: 0,
+					slide: function(event, ui) {
+						var c = (ui.value / 25) - 1;
+						test2params.c = c;
+						test2.render();
+						$("#test2-c-value").html(round(c, 3));
+					}
+				});
+
+				$("#test2-d").slider({
+					value: 50,
+					slide: function(event, ui) {
+						var d = (ui.value / 5) - 10;
+						test2params.d = d;
+						test2.render();
+						$("#test2-d-value").html(round(d, 3));
+					}
+				});
 			}
+
+			function test2benchmark() {
+				var start = new Date();
+				var i = 0;
+				do {
+					test2.render();
+					i++;
+				} while((new Date() - start) < 1000);
+				alert(i +' FPS');
+			}
+
 		</script>
 	</head>
 	<body onload="init();">
+		<!-- Test 1 -->
 		<h1>y = a sin(b x + c) + d</h1>
 
 		<canvas id="test1" width="800" height="600" style="border: 1px solid #000000;"></canvas>
@@ -102,6 +188,39 @@
 				<th>d:</th>
 				<td><div id="test1-d" style="width: 200px; height: 10px; margin: 10px;"></div></td>
 				<td id="test1-d-value">0</td>
+			</tr>
+		</table>
+
+		<!-- Test 2 -->
+		<h1>y = a x^3 + b x^2 + c x + d</h1>
+
+		<canvas id="test2" width="800" height="600" style="border: 1px solid #000000;"></canvas>
+
+		<table>
+			<tr>
+				<th>a:</th>
+				<td><div id="test2-a" style="width: 200px; height: 10px; margin: 10px;"></div></td>
+				<td id="test2-a-value">3</td>
+			</tr>
+			<tr>
+				<th>b:</th>
+				<td><div id="test2-b" style="width: 200px; height: 10px; margin: 10px;"></div></td>
+				<td id="test2-b-value">3</td>
+			</tr>
+			<tr>
+				<th>c:</th>
+				<td><div id="test2-c" style="width: 200px; height: 10px; margin: 10px;"></div></td>
+				<td id="test2-c-value">-1</td>
+			</tr>
+			<tr>
+				<th>d:</th>
+				<td><div id="test2-d" style="width: 200px; height: 10px; margin: 10px;"></div></td>
+				<td id="test2-d-value">0</td>
+			</tr>
+			<tr>
+				<td>
+					<button type="button" onclick="test2benchmark();">Benchmark</button>
+				</td>
 			</tr>
 		</table>
 	</body>
