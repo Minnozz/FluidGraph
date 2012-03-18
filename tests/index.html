@@ -1,0 +1,108 @@
+<html>
+	<head>
+		<title>FluidGraph Tests</title>
+
+		<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+
+		<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.0/themes/base/jquery-ui.css" />
+
+		<script type="text/javascript" src="../fluidgraph.js"></script>
+		<script type="text/javascript">
+			function init() {
+				test1();
+			}
+
+			var test1;
+			var test1params = {
+				a: 1,
+				b: 1,
+				c: 0,
+				d: 0
+			};
+			function test1() {
+				test1 = new FluidGraphLine(document.getElementById('test1'));
+				test1.setRangeX(0, 10);
+				test1.setRangeY(-2, 2);
+				test1.setDataSource(function(x) {
+					return test1params.a * Math.sin(test1params.b * x + test1params.c) + test1params.d;
+				});
+				test1.init();
+
+
+				$("#test1-a").slider({
+					value: 50,
+					slide: function(event, ui) {
+						var a = ui.value / 50;
+						test1params.a = a;
+						test1.render();
+						$("#test1-a-value").html(round(a, 3));
+					}
+				});
+
+				$("#test1-b").slider({
+					value: 10,
+					slide: function(event, ui) {
+						var b = ui.value / 10;
+						test1params.b = b;
+						test1.render();
+						$("#test1-b-value").html(round(b, 3));
+					}
+				});
+
+				$("#test1-c").slider({
+					value: 50,
+					slide: function(event, ui) {
+						var c = (ui.value / 10) - 5;
+						test1params.c = c;
+						test1.render();
+						$("#test1-c-value").html(round(c, 3));
+					}
+				});
+
+				$("#test1-d").slider({
+					value: 50,
+					slide: function(event, ui) {
+						var d = (ui.value / 25) - 2;
+						test1params.d = d;
+						test1.render();
+						$("#test1-d-value").html(round(d, 3));
+					}
+				});
+			}
+
+			function round(x, decimals) {
+				return Math.round(x * Math.pow(10, decimals)) / Math.pow(10, decimals);
+			}
+		</script>
+	</head>
+	<body onload="init();">
+		<h1>y = a sin(b x + c) + d</h1>
+
+		<canvas id="test1" width="800" height="600" style="border: 1px solid #000000;"></canvas>
+
+		<table>
+			<tr>
+				<th>a:</th>
+				<td><div id="test1-a" style="width: 200px; height: 10px; margin: 10px;"></div></td>
+				<td id="test1-a-value">1</td>
+			</tr>
+			<tr>
+				<th>b:</th>
+				<td><div id="test1-b" style="width: 200px; height: 10px; margin: 10px;"></div></td>
+				<td id="test1-b-value">1</td>
+			</tr>
+			<tr>
+				<th>c:</th>
+				<td><div id="test1-c" style="width: 200px; height: 10px; margin: 10px;"></div></td>
+				<td id="test1-c-value">0</td>
+			</tr>
+			<tr>
+				<th>d:</th>
+				<td><div id="test1-d" style="width: 200px; height: 10px; margin: 10px;"></div></td>
+				<td id="test1-d-value">0</td>
+			</tr>
+		</table>
+	</body>
+</html>
