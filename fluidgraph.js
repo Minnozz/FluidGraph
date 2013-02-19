@@ -1,5 +1,6 @@
 //
 // FluidGraph
+// Copyright (c) Bart Schuurmans, 2012-2013
 //
 
 function FluidGraph() {
