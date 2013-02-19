@@ -17,6 +17,7 @@
 			function init() {
 				test1();
 				test2();
+				test3();
 			}
 
 			function round(x, decimals) {
@@ -33,7 +34,8 @@
 				a: 1,
 				b: 1,
 				c: 0,
-				d: 0
+				d: 0,
+				e: 0
 			};
 
 			function test1() {
@@ -41,7 +43,7 @@
 				test1.setRangeX(0, 10);
 				test1.setRangeY(-2, 2);
 				test1.setDataSource(function(x) {
-					return test1params.a * Math.sin(test1params.b * x + test1params.c) + test1params.d;
+					return test1params.a * Math.sin(test1params.b * x + test1params.c) + test1params.d + test1params.e * x;
 				});
 				test1.init();
 
@@ -83,6 +85,16 @@
 						test1params.d = d;
 						test1.render();
 						$("#test1-d-value").html(round(d, 3));
+					}
+				});
+
+				$("#test1-e").slider({
+					value: 50,
+					slide: function(event, ui) {
+						var e = (ui.value / 25) - 2;
+						test1params.e = e;
+						test1.render();
+						$("#test1-e-value").html(round(e, 3));
 					}
 				});
 			}
@@ -160,11 +172,29 @@
 				alert(i +' FPS');
 			}
 
+			//
+			// Test 2
+			//
+
+			var test3;
+			var test3params = {
+			};
+
+			function test3() {
+				test3 = new FluidGraphLine(document.getElementById('test3'));
+				test3.setRangeX(0, 1);
+				test3.setRangeY(-5, 5);
+				test3.setAxes(false);
+				test3.setDataSource(function(x) {
+					return Math.log(x / (1 -x)) / Math.log(Math.E);
+				});
+				test3.init();
+			}
 		</script>
 	</head>
 	<body onload="init();">
 		<!-- Test 1 -->
-		<h1>y = a sin(b x + c) + d</h1>
+		<h1>y = a sin(b x + c) + d + e x</h1>
 
 		<canvas id="test1" width="800" height="600" style="border: 1px solid #000000;"></canvas>
 
@@ -188,6 +218,11 @@
 				<th>d:</th>
 				<td><div id="test1-d" style="width: 200px; height: 10px; margin: 10px;"></div></td>
 				<td id="test1-d-value">0</td>
+			</tr>
+			<tr>
+				<th>e:</th>
+				<td><div id="test1-e" style="width: 200px; height: 10px; margin: 10px;"></div></td>
+				<td id="test1-e-value">0</td>
 			</tr>
 		</table>
 
@@ -223,5 +258,10 @@
 				</td>
 			</tr>
 		</table>
+
+		<!-- Test 3 -->
+		<h1>y = logit(x)</h1>
+
+		<canvas id="test3" width="800" height="600" style="border: 1px solid #000000;"></canvas>
 	</body>
 </html>
